@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Axios</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <button id="btn01">按钮1</button>
+  <button id="btn02">按钮2</button>
+
+
+
+  <script>
+    document.getElementById("btn01").onclick = () => {
+      //直接调用axios发送请求
+      // axios(config)
+      axios({
+        //baseUrl 指定服务器的根目录（路径的前缀）
+        baseURL: "http://localhost:3000",  //在url面前连上 就是请求地址  
+        //请求地址  
+        url: "students",
+
+        //请求方法：默认是get
+        method: "post",
+        //指定请求头
+        /*        headers: {
+                 "Content-type": "application/json"
+               }, */
+        //请求头  //会自动将数据转换为json格式 
+        data: {
+          name: "汤森",
+          age: 16,
+          gender: "男"
+        },
+        //可以用来处理请求数据（data）
+        //需要用数组作为参数， 数组可以接受多个函数，请求发送时函数按照顺序执行
+        //函数在执行时，会接受到两个参数data和headers
+        /*   transformRequest: [function (data, headers) {
+            //可以在函数中对data和headers进行修改
+            data.name = "猪八戒"
+            headers["Content-type"] = "application/json"
+            console.log(111);
+            return data
+          }, function (data, headers) {
+            console.log(data); //它拿到的是上一个function修改后的data和headers
+            //最后一个函数必须返回一个字符串，才能使得数据有效 
+            return JSON.stringify(data)
+          }] */
+
+        //用来指定路径中的查询字符串
+        params: {
+          id: "1",
+          name: "swk"
+
+        },
+        //timeout 过期时间
+        timeout: 1000
+      }).then(res => console.log(res.data))
+        .catch(err => console.log("出错了", err))
+    }
+
+
+    document.getElementById("btn02").onclick = () => {
+      //直接调用axios发送请求
+      // axios(config)
+      axios({
+        method: "get",
+        url: "http://localhost:3000/students",
+
+      }).then(res => {
+        //axios 默认只会在响应状态码为2xx时才会执行then  不然就是执行catch
+      })
+        .catch(err => console.log("出错了", err))
+    }
+
+
+  </script>
+</body>
+
+</html>

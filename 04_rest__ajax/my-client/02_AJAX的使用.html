@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <h1>AJAX测试</h1>
+  <hr>
+  <button id="btn">点我加载数据 </button>
+  <div id="root"> </div>
+  <script>
+    const btn = document.getElementById("btn")
+    const root = document.getElementById("root")
+    btn.onclick = () => {
+      //创建一个xhr对象
+      const xhr = new XMLHttpRequest()
+
+      xhr.responseType = "json"  //设置响应类型
+      //为xhr对象绑定一个load事件
+      xhr.onload = function () {
+        // console.log(xhr.status);  //表示响应状态码
+        if (xhr.status === 200) {
+          //响应码正确的时候返回数据
+          //   xhr.response表示响应信息   是异步的
+          // console.log(xhr.response);
+          /*方法一：转换为对象
+          const result = JSON.parse(xhr.response)  //将相应信息转换为对象
+          console.log(result.status, result.data); */
+
+          const result = xhr.response
+          if (result.status === "ok") {
+            const ul = document.createElement("ul")
+            //将ul插入到root中
+            root.appendChild(ul)
+            //遍历数据
+            for (let stu of result.data) {
+              ul.insertAdjacentHTML(
+                "beforeend",
+                `<li>${stu.id}-${stu.name}-${stu.age}-${stu.gender}-${stu.address}</li>`
+              )
+            }
+          }
+        }
+
+
+      }
+
+      //设置请求的信息
+      xhr.open("get", "http://localhost:3000/students")
+      //发送请求
+      xhr.send()
+
+      //读取相应信息
+
+
+
+    }
+  </script>
+</body>
+
+</html>

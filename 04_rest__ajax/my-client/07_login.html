@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 （解决数据安全问题， 服务器知道登录状态）</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 50%;
+    }
+
+    td,
+    th {
+      font-style: 20px;
+      text-align: center;
+      border: 1px solid #000;
+    }
+
+    caption {
+      font-style: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 通过fetch请求 完成客户端的登录功能   并且保持登录状态 
+   解决数据安全问题， 服务器知道登录状态-->
+
+
+  <div id="root">
+    <h1>请登陆以后再做操作</h1>
+    <h2 id="info"></h2>
+    <form>
+      <div><input id="username" type="text"></div>
+      <div><input id="password" type="text"></div>
+      <div><button id="login-btn" type="button"> 登录</button></div> <!-- 加入type=button后可以阻止默认的提交行为 -->
+    </form>
+  </div>
+
+  <script>
+    //点击login-btn按钮后实现登录功能
+    const loginBtn = document.getElementById("login-btn")
+    const root = document.getElementById("root")
+
+    //调用以下函数来加载数据：
+    function loadData() {
+      //当我们访问的是需要登录权限的api时，必须在请求中附加权限的信息
+      const token = localStorage.getItem("token")
+      //token一般都是通过请求头来发送 
+      fetch("http://localhost:3000/students", {
+        headers: {
+
+          //格式 是：“Bearer xxxxxx”
+          "Authorization": `Bearer ${token}` //附加权限信息
+        }
+      })
+        .then(res => {
+          if (res.status === 200) {
+            //res.json（）可以用来读取json格式的数据 
+            // console.log(res.json()); // 发现返回的是promise  直接return
+            return res.json()
+          } else {
+            // console.log("请求出错了");
+            throw new Error("加载失败！") //会抛给catch
+          }
+        })
+        .then(res => {
+          //此时的res 是上一次then的返回值 也就是res.json
+          // console.log(res);   
+          //获取到数据后，将数据渲染到页面中
+          if (res.status === "ok") {
+            //创建一个table
+            const table = document.createElement("table")
+            root.appendChild(table)
+            table.insertAdjacentHTML(
+              "beforeend",
+              "<caption>学生列表</caption>")
+            table.insertAdjacentHTML(
+              "beforeend",
+              `<thead>
+                  <tr>
+                    <th>学号</th>
+                    <th>姓名</th>
+                    <th>年龄</th>
+                    <th>性别</th>
+                    <th>地址</th>
+                  </tr>
+              </thead>`)
+
+            const tbody = document.createElement("tbody")
+            table.appendChild(tbody)
+            //遍历数据
+            for (let stu of res.data) {
+              tbody.insertAdjacentHTML("beforeend", `
+                  <tr>
+                    <td>${stu.id}</td>
+                    <td>${stu.name}</td>
+                    <td>${stu.age}</td>
+                    <td>${stu.gender}</td>
+                    <td>${stu.address}</td>
+
+                  </tr>`
+              )
+            }
+
+          }
+        })
+        .catch(err => {
+          console.log("出错了", err);
+        })
+
+    }
+
+    //判断用户是否登录
+    if (localStorage.getItem("token")) {
+      //用户已经登录
+      root.innerHTML = `
+          <h1>欢迎 ${localStorage.getItem("nickname")} 回来</h1>
+           <hr>
+           <button id="load" onclick="loadData()">加载数据</button>
+             <button onclick="localStorage.clear()">注销</button>
+          <hr>
+          <div id="data"></div>
+           `
+
+    } else {
+
+      loginBtn.onclick = () => {
+        //获取用户名和密码
+        const username = document.getElementById("username").value.trim()
+        const password = document.getElementById("password").value.trim()
+
+        // alert(username + "--" + password)
+
+
+        //调用fetch发送请求来完成登录
+        fetch("http://localhost:3000/login", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify({
+            username, password
+          })
+        }).then(res => res.json())
+          .then(res => {
+            if (res.status !== "ok") {
+              throw new Error("用户名或者密码错误")
+            }
+
+            //登陆成功以后要保持用户的登录状态， 由于跨域，cookie和session都用不了了
+            //所以采用本地存储  sessionStorage   和  localStorage
+            // console.log(res);
+            localStorage.setItem("token", res.data.token)
+            localStorage.setItem("nickname", res.data.nickname)
+
+
+
+            // console.log(res)
+            //登陆成功
+            root.innerHTML = `
+          <h1>欢迎 ${res.data.nickname} 回来</h1>
+           <hr>
+           <button id="load" onclick="loadData()">加载数据</button>
+           <button onclick="localStorage.clear()">注销</button>
+           <hr>
+          <div id="data"></div>
+           `
+          })
+          .catch(err => {
+            console.log("出错了");
+            document.getElementById("info").innerText = "用户名或者密码错误"
+          })
+      }
+    }
+
+  </script>
+</body>
+
+</html>

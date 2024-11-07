@@ -1,0 +1,10 @@
+node_modules
+yarn.lock
+*.log
+fonts
+images
+iconfont
+css
+uploads
+*.jpg
+package.json

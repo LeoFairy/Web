@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>这是一个网页</title>
+</head>
+
+<body>
+
+  <!-- 
+   把服务器中的数据在网页中显示出来
+   -->
+  <h1>这是客户端</h1>
+  <button id="btn">点我加载数据</button>
+
+  <script>
+    //点击按钮以后， 就自动去加载服务器的数据
+    const btn = document.getElementById("btn")
+    // btn.onclick = function
+    btn.onclick = () => {
+      // alert("哈哈")
+      //向服务器发送请求
+      /* 在js中向服务器发送 请求加载数据的 技术 叫 AJAX */
+
+      // xhr
+      // 创建一个新的xhr对象，xhr表示请求信息
+      const xhr = new XMLHttpRequest()
+
+      // 设置请求的信息
+      xhr.open("GET", "http://localhost:3000/students")
+
+      // 发送请求
+      xhr.send()
+
+    }
+  </script>
+</body>
+
+</html>

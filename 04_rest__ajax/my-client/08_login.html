@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 （解决数据安全问题， 服务器知道登录状态）</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 50%;
+    }
+
+    td,
+    th {
+      font-style: 20px;
+      text-align: center;
+      border: 1px solid #000;
+    }
+
+    caption {
+      font-style: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 取消请求AbortController -->
+  <button id="btn01">点我一下</button>
+  <button id="btn02">取消</button>
+  <button id="btn03">按钮3号</button>
+  <script>
+    //获取按钮
+    const btn1 = document.getElementById("btn01")
+    const btn2 = document.getElementById("btn02")
+    const btn3 = document.getElementById("btn03")
+
+
+    let controller
+
+    btn1.onclick = () => {
+      //创建一个AbortController
+      controller = new AbortController()
+
+      /*   setTimeout(() => {
+          controller.abort() //会终止请求
+        }, 3000) */
+
+      //终止请求
+      //点击按钮向test发送请求
+      fetch("http://localhost:3000/test", {
+        signal: controller.signal
+      })
+        .then(res => console.log(res)
+        ).catch(err => console.log(err)
+        )
+    }
+
+    btn2.onclick = () => {
+      controller && controller.abort()  //如果第一个是flase 就不看后面的  只有前面是ture才会看后面
+    }
+
+
+    //用await发送请求 
+    btn3.onclick = async () => {
+      // fetch("http://localhost:3000/test").then()...
+
+      //将promise改写成await时，一定要写try catch
+      try {
+        const res = await fetch("http://localhost:3000/students")
+        const data = await res.json()
+        console.log(data);
+      } catch (e) {
+        console.log("出错了", e);
+      }
+
+    }
+  </script>
+</body>
+
+</html>

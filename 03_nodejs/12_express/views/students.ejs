@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>这是ejs模版</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      /* 合并外边框 */
+    }
+
+    th,
+    td {
+      border: 1px #000 solid;
+      font-size: 20px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    caption {
+      font-size: 25px;
+      /* 字体加粗 */
+      font-weight: bold;
+    }
+  </style>
+
+</head>
+
+<body>
+  <h1>HELLO EJS~ 哈哈</h1>
+
+  <!-- 
+    <h2><%# name%></h2>
+ 通过它可以将render 传递过来的数据 在网页中显示出来
+   -->
+
+  <!--  这个注释对于 下面那个 是无效的，  这个注释仅针对前端代码-->
+  <!-- <%# name%> -->
+  <form action="/set_name">
+    <input type="text" name="name" placeholder="请输入您的名字">
+    <button>提交</button>
+  </form>
+
+
+  <hr>
+  <table>
+
+    <caption>学生列表</caption>
+    <thead>
+      <tr>
+        <th>学号</th>
+        <th>姓名</th>
+        <th>年龄</th>
+        <th>性别</th>
+        <th>地址</th>
+      </tr>
+    </thead>
+    <tbody>
+
+
+      <!-- 根据路由请求中所传过来的对象数据信息  渲染界面 -->
+      <% for (const stu of stus){ %>
+        <tr>
+          <th>
+            <%= stu.id %>
+          </th>
+          <th>
+            <%= stu.name %>
+          </th>
+          <th>
+            <%= stu.age%>
+          </th>
+          <th>
+            <%=stu.gender %>
+          </th>
+          <th>
+            <%= stu.address%>
+          </th>
+        </tr>
+        <%} %>
+    </tbody>
+  </table>
+  <hr>
+
+  <!--  新增 登录功能-->
+  <form action="/add-students" method="post">
+    <div>
+      姓名：<input type="text" name="name">
+    </div>
+    <div>
+      年龄：<input type="number" max="150" min="0" name="age">
+    </div>
+    <div>
+      性别：<input type="radio" name="gender" value="男">男
+      <input type="radio" name="gender" value="女">女
+    </div>
+    <div>
+      地址：<input type="text" name="address">
+    </div>
+    <div> <button>添加</button></div>
+  </form>
+
+
+
+
+
+</body>
+
+</html>

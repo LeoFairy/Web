@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Axios</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <button id="btn01">按钮1</button>
+  <button id="btn02">按钮2</button>
+
+
+
+  <script>
+    axios.defaults.baseURL = "http://localhost:3000"
+
+    //axios的拦截器可以对请求或响应进行拦截， 在请求发送和相应处理之前处理数据
+    // 拦截器只对当前的实例有效
+    // 添加请求拦截器
+    axios.interceptors.request.use(
+      function (config) {
+        //在发送请求前执行
+        // console.log("拦截器执行了")
+        // config 表示axios中的配置对象
+        // config.data.name = "猪哈哈"
+        config.headers["Authorization"] = `Bearer ${localStorage.getItem("token")}`
+
+        // 在发送请求之前做些什么
+        return config
+      },
+      function (error) {
+        // 对请求错误做些什么
+        return Promise.reject(error)
+      }
+    )
+
+    document.getElementById("btn1").onclick = () => {
+      axios({
+        url: "students",
+        method: "post",
+        data: { name: "猪八戒" }
+      })
+        .then((res) => console.log(res.data))
+        .catch((err) => {
+          console.log("出错了", err)
+        })
+    }
+
+    document.getElementById("btn01").onclick = () => {
+      instance.get("students").then(res => console.log(res))
+        .catch(e => console.log("出错了", e))
+    }
+  </script>
+</body>
+
+</html>
